@@ -30,83 +30,13 @@ abstract class Ship implements MovingObject {
     this.maxSpeed = maxSpeed;
   }
 
-  shoot(side: ShipSide) {
+  shoot(side: ShipSide): CannonBall[] {
     const cannonGroup = this.cannons[side];
     if (cannonGroup !== undefined) {
       return cannonGroup.fire(this.direction, this.object.position);
     }
     return []
   }
-
-  // shoot(side: ShipSide): CannonBall[] {
-
-  //   let ballDirection: Vector2;
-
-  //   switch (side) {
-  //     case ShipSide.BOW:
-  //       ballDirection = this.direction.clone();
-  //       break;
-
-  //     case ShipSide.STARBOARD:
-  //       ballDirection = new Vector2(this.direction.y, -this.direction.x);
-  //       break;
-
-  //     case ShipSide.STERN:
-  //       ballDirection = new Vector2(-this.direction.y, -this.direction.x);
-  //       break;
-
-  //     case ShipSide.PORT:
-  //       ballDirection = new Vector2(-this.direction.y, this.direction.x);
-  //       break;
-  //   }
-
-  //   if (this.cannons[side] !== undefined && this.cannons[side]!.count !== 0) {
-
-  //     const numOfCannonsInShootingSide = this.cannons[side]!.count;
-  //     const cannonOfShootingSide = this.cannons[side]!.cannon;
-
-  //     const distanceBetweenCannons = this.size[side] / numOfCannonsInShootingSide;
-  //     const cannonBallInitialPosition = this.object.position.clone();
-
-
-  //     // Put initial ball position in the ship's port
-  //     cannonBallInitialPosition.x -= this.direction.x * this.size[side] / 2;
-  //     cannonBallInitialPosition.z -= this.direction.y * this.size[side] / 2;
-
-  //     // TODO: This should depent on the ships height?
-  //     cannonBallInitialPosition.y += 2;
-
-  //     const cannonBalls: CannonBall[] = [];
-  //     // create a cannon ball for each cannon on that side, separated by the ships size
-  //     for (let c = 0; c < this.cannons[side]!.count; c++) {
-
-  //       // Fire!!
-  //       const ball = cannonOfShootingSide.fire(ballDirection);
-
-  //       if (ball) {
-  //         console.log(this.direction);
-  //         console.log(ballDirection);
-  //         ball.object.position.copy(cannonBallInitialPosition);
-
-  //         // Move cannonBall position so that not all balls fire from the same point.
-  //         // Ideally this should be evenly divided in the ships firing side.
-
-  //         ball.object.position.x += this.direction.x * (distanceBetweenCannons * c)
-  //         ball.object.position.z += this.direction.y * (distanceBetweenCannons * c)
-
-
-  //         cannonBalls.push(ball);
-  //       }
-  //     }
-
-  //     cannonOfShootingSide.startRecharge();
-
-  //     return cannonBalls;
-
-  //   }
-
-  //   return [];
-  // }
 
   rotate(side: 'left' | 'right') {
 
@@ -122,7 +52,6 @@ abstract class Ship implements MovingObject {
   }
 
   accelerate = () => {
-    // console.log('accelerate')
     this.acceleration = 2;
   }
 
@@ -130,7 +59,6 @@ abstract class Ship implements MovingObject {
 
     if (this.acceleration !== 0) {
       // Move ship in the x and z axis depending on the direction
-
       const velocity = new Vector2(this.direction.x * this.speed * dt, this.direction.y * this.speed * dt);
       const dx = this.object.position.x + velocity.x
       const dz = this.object.position.z + velocity.y
@@ -183,8 +111,9 @@ abstract class Ship implements MovingObject {
   }
 
   private waveMovement(t: number) {
-    const deltaMov = 0.001;
-    this.object.rotation.z = (Math.sin(t * deltaMov) + 0.7) / 10;
+    // Almost 1 ocilation every 5 seg.
+    const deltaMov = 0.0011;
+    this.object.rotation.z = (Math.sin(t * deltaMov) + 0.5) / 10;
   }
 
 }

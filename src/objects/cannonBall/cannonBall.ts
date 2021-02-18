@@ -13,6 +13,7 @@ abstract class CannonBall {
   }
 
   public move() {
+    // TODO: follow same step(dt) pattern here.
     const speed = 1;
     this.object.position.x = this.object.position.x + this.direction.x * speed;
     this.object.position.z = this.object.position.z + this.direction.y * speed;
