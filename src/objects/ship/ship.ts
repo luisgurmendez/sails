@@ -39,9 +39,9 @@ abstract class Ship implements MovingObject {
   }
 
   rotate(side: 'left' | 'right') {
-
     const rotationDelta = (Math.PI / 360) * this.speed;
     const minRotation = (Math.PI / 360) / 2;
+    // TODO: fix this
     const rotationAngle = this.isMoving() ? minRotation : rotationDelta + minRotation
 
     if (side === 'left') {
@@ -56,7 +56,6 @@ abstract class Ship implements MovingObject {
   }
 
   move = (dt: number) => {
-
     if (this.acceleration !== 0) {
       // Move ship in the x and z axis depending on the direction
       const velocity = new Vector2(this.direction.x * this.speed * dt, this.direction.y * this.speed * dt);

@@ -8,13 +8,85 @@
     body {
       margin: 0;
     }
+
+    #ship-stats {
+      padding: 10px;
+      background-color: rgba(0, 0, 0, 0.4);
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      border-radius: 5px;
+    }
+
+    .stat {
+      color: white;
+    }
+
+    .steer-wheel-container {
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      padding: 10px;
+      background-color: rgba(228, 227, 255, 0.4);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .steer-wheel-container:hover {
+      background-color: rgba(228, 227, 255, 0.8);
+    }
+
+    .steer-wheel-img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .compass-container {
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      position: absolute;
+      bottom: 110px;
+      right: 15px;
+      padding: 10px;
+      background-color: rgba(228, 227, 255, 0.4);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #compass-img {
+      width: 100%;
+      height: 100%;
+    }
   </style>
 </head>
 
 <body>
   <script>var exports = {};</script>
-  <script src="build/index.js">
-  </script>
+  <div id="steer-wheel">
+    <div class="steer-wheel-container">
+      <img class="steer-wheel-img" src="./assets/shipSteer.png" />
+    </div>
+  </div>
+
+  <div id="compass">
+    <div class="compass-container">
+      <img id="compass-img" src="./assets/compass.png" />
+    </div>
+  </div>
+
+  <div id="ship-stats">
+    <div class="stat" id="ship-stats-position"></div>
+    <div class="stat" id="ship-stats-speed"></div>
+    <div class="stat" id="ship-stats-acceleration"></div>
+  </div>
+
+  <script src="build/index.js"></script>
 </body>
 
 </html>

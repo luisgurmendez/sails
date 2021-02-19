@@ -1,11 +1,11 @@
 
-import { camera, renderer, scene } from './core';
+import { camera, renderer, scene, controls } from './core';
 import loadShipAsync from './objects/ship/shipLoader';
 import SimpleShip from './objects/ship/simpleShip';
 import PressedKey, { RIGHT, LEFT, UP } from './controls';
 import { ShipSide } from './objects/ship/types';
 import Stats from 'stats.js';
-import { Clock } from 'three';
+import { Clock, MathUtils, Vector2 } from 'three';
 import CannonBall from 'objects/cannonBall/cannonBall';
 
 const stats = new Stats()
@@ -29,6 +29,14 @@ document.body.appendChild(stats.dom);
     console.log(simpleShip);
     const clock = new Clock();
     const balls: CannonBall[] = [];
+
+    const steerWheel = document.getElementById('steer-wheel');
+    if (steerWheel) {
+      steerWheel.onclick = function () {
+        camera.lookAt(simpleShip.object.position.clone());
+        controls.target = simpleShip.object.position.clone();
+      }
+    }
 
     function animate(t: number) {
       const dt = clock.getDelta()
@@ -55,6 +63,27 @@ document.body.appendChild(stats.dom);
       })
       renderer.render(scene, camera);
       stats.end()
+      // enable dumping
+      controls.update();
+      const shipPositionDOM = document.getElementById('ship-stats-position');
+      shipPositionDOM!.innerHTML = `
+      <div class="stat">x: ${simpleShip.object.position.x.toFixed(1)}</div>
+      <div class="stat">y: ${simpleShip.object.position.y.toFixed(1)}</div>
+      <div class="stat">z: ${simpleShip.object.position.z.toFixed(1)}</div>
+      `;
+
+      const shipSpeedDOM = document.getElementById('ship-stats-speed');
+      shipSpeedDOM!.innerHTML = `
+      <div class="stat">speed: ${simpleShip.speed.toFixed(1)}</div>
+      `;
+
+      // const north = new Vector2(1, 0);
+
+      const INITIAL_COMPASS_IMAGE_ROTATION = -30;
+      const shipDirectionInDegreesWithRespectWithNorth = -1 * MathUtils.radToDeg(simpleShip.direction.angle()) + INITIAL_COMPASS_IMAGE_ROTATION;
+      const compassDOM = document.getElementById('compass-img');
+      compassDOM!.style.transform = `rotate(${shipDirectionInDegreesWithRespectWithNorth}deg)`
+
       requestAnimationFrame(animate);
     }
 

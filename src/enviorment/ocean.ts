@@ -9,7 +9,7 @@ class Ocean {
   object: Object3D;
 
   constructor() {
-    const geometry = new PlaneGeometry(1000, 1000, 20, 20);
+    const geometry = new PlaneGeometry(100000, 100000, 20, 20);
     const material = new MeshStandardMaterial({ color: 0x006994, side: DoubleSide });
     geometry.computeVertexNormals();
     material.flatShading = true;
