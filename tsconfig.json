@@ -8,7 +8,6 @@
   "include": [
     "src/index.html",
     "src/*.ts",
-    "src/objects/cannonBall/cannon.ts",
   ],
   "compilerOptions": {
     "module": "commonjs",
@@ -22,6 +21,7 @@
     "outDir": "./build",
     "baseUrl": "./src",
     "strict": true,
+    "skipLibCheck": true,
     "types": [],
     "noImplicitAny": true,
     "sourceMap": true,

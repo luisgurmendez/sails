@@ -8,6 +8,8 @@ class Ocean {
 
   object: Object3D;
 
+  // TODO: currents & waves
+
   constructor() {
     const geometry = new PlaneGeometry(100000, 100000, 20, 20);
     const material = new MeshStandardMaterial({ color: 0x006994, side: DoubleSide });

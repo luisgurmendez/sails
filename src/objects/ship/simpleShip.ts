@@ -6,7 +6,6 @@ import CannonGroup from "../cannon/cannonGroup";
 
 class SimpleShip extends Ship {
   constructor(mesh: Object3D) {
-
     const size: ShipSize = {
       [ShipSide.BOW]: 5,
       [ShipSide.STARBOARD]: 10,
@@ -27,7 +26,10 @@ class SimpleShip extends Ship {
       [ShipSide.STERN]: sternCannonGroup
     }
 
-    super(mesh, size, cannons, 15);
+    //TODO: in kilograms
+    const weight = 1000;
+
+    super(mesh, size, weight, cannons, 15);
   }
 }
 

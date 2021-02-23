@@ -9,7 +9,7 @@ export type Arrow = typeof LEFT | typeof RIGHT | typeof DOWN | typeof UP
 export type ArrowKeysPressedMapping = { [key in Arrow]: boolean }
 export type PressedKeysMapping = { [key: string]: boolean }
 
-class PressedKey {
+class Keyboard {
   private pressedKeys: PressedKeysMapping;
 
   constructor() {
@@ -42,4 +42,4 @@ class PressedKey {
   }
 }
 
-export default PressedKey;
+export default Keyboard;

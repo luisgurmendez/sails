@@ -1,33 +1,49 @@
 import { Object3D, Vector2 } from "three";
 import CannonBall from "../cannonBall/cannonBall";
 import { ShipCannons, ShipSize, ShipSide } from "./types";
-import MovingObject from '../movingObject';
+import SteppedObject from '../SteppedObject';
+import Enviorment from "../../enviorment/enviorment";
+import Sails from './sails';
+import { GRAVITY } from '../../utils/phyisics';
 
-abstract class Ship implements MovingObject {
+abstract class Ship implements SteppedObject {
 
   static ROTATE_LEFT = 'left';
   static ROTATE_RIGHT = 'right';
 
   public direction: Vector2;
   public acceleration: number;
+  public speed: number;
+
+  // TODO: public rotationSpeed: number;
 
   public object: Object3D;
-  public size: ShipSize;
 
-  public speed: number;
+  public size: ShipSize;
+  public weight: number;
+
   public maxSpeed: number;
 
-  // The type of cannon used in this ship.
+  public type: string;
+  public shouldBeRemoved = false;
+
   public cannons: ShipCannons;
 
-  constructor(object: Object3D, size: ShipSize, cannons: ShipCannons, maxSpeed: number) {
+  public sails: Sails;
+  public mass: number;
+
+  constructor(object: Object3D, size: ShipSize, weight: number, cannons: ShipCannons, maxSpeed: number) {
+    this.type = 'Ship';
     this.direction = new Vector2(1, 0);
     this.speed = 0;
     this.acceleration = 0;
     this.object = object;
     this.size = size;
+    this.weight = weight;
     this.cannons = cannons;
     this.maxSpeed = maxSpeed;
+    this.sails = new Sails(10, 5);
+    this.mass = 1000;
   }
 
   shoot(side: ShipSide): CannonBall[] {
@@ -51,10 +67,6 @@ abstract class Ship implements MovingObject {
     }
   }
 
-  accelerate = () => {
-    this.acceleration = 2;
-  }
-
   move = (dt: number) => {
     if (this.acceleration !== 0) {
       // Move ship in the x and z axis depending on the direction
@@ -67,16 +79,63 @@ abstract class Ship implements MovingObject {
     }
   }
 
-  step = (t: number, dt: number) => {
+  step = (enviorment: Enviorment, t: number, dt: number) => {
+    this.acceleration = this.calculateAcceleration(enviorment);
     this.calculateSpeed(dt);
     this.waveMovement(t);
     this.move(dt);
-    this.desAccelerate();
+    // this.desAccelerate(); // TODO: use calculateAcceleration
     Object.keys(this.cannons).forEach(c => {
       const cannon: ShipSide = c as ShipSide;
       const cannonGroup = this.cannons[cannon];
       cannonGroup && cannonGroup.getCannon().step(dt);
     })
+  }
+
+  openSails() {
+    this.sails.open = true;
+  }
+
+  closeSails() {
+    this.sails.open = false;
+  }
+
+  private calculateAcceleration(enviorment: Enviorment) {
+    // f=m*a --> a = f/m;
+    // f = fw(wind force) + fd(drag force) - fr(friction force)
+    // fw = wind preassure * Sails Area
+    // fd = Water preassure * keel area + air preassure * exposed boat area.
+    // wind preassure (simplified) = wp = air mass density (kg/m^3) * wind speed^2(m/s^2)
+    // We will assume that the air density is constant and 1.225
+    // Sails Area = sa = the proyected area of the rectangled sail in the plane of the wind = sails.width * cos(angle in which the wind comes with respect to the boats direction) * sails.height
+
+
+    const airMassDensity = 1.225;
+
+
+    const wind = enviorment.wind.getWindAtPosition(this.object.position);
+    const windPreassure = airMassDensity * Math.pow(wind.speed, 2);
+
+    // const angleBetweenWindDirectionAndShipDirection = angleTo(this.direction, wind.direction);
+    let proyectedSailsAreaInWindsDirection = 30 //this.sails.width * Math.cos(angleBetweenWindDirectionAndShipDirection) * this.sails.height;
+
+    if (!this.sails.open) {
+      proyectedSailsAreaInWindsDirection = 0;
+    }
+
+    const dragForce = 0;
+
+    const shipsNormalForce = this.mass * GRAVITY;
+
+    const waterShipFrictionCoeficcient = 0.2;
+    const windForce = windPreassure * proyectedSailsAreaInWindsDirection;
+    let frictionForce = shipsNormalForce * waterShipFrictionCoeficcient;
+    if (!this.isMoving()) {
+      frictionForce = 0
+    }
+    const totalForce = windForce + dragForce - frictionForce;
+    const acceleration = totalForce / this.mass;
+    return acceleration;
   }
 
   private calculateSpeed(dt: number) {
@@ -86,13 +145,13 @@ abstract class Ship implements MovingObject {
     }
   }
 
-  private desAccelerate() {
-    if (this.isMoving()) {
-      this.acceleration = -1;
-    } else {
-      this.acceleration = 0;
-    }
-  }
+  // private desAccelerate() {
+  //   if (this.isMoving()) {
+  //     this.acceleration = -1;
+  //   } else {
+  //     this.acceleration = 0;
+  //   }
+  // }
 
   private isMoving() {
     const velocityThreshold = 0.01;
@@ -111,10 +170,21 @@ abstract class Ship implements MovingObject {
 
   private waveMovement(t: number) {
     // Almost 1 ocilation every 5 seg.
-    const deltaMov = 0.0011;
-    this.object.rotation.z = (Math.sin(t * deltaMov) + 0.5) / 10;
+    // TODO: this should depend on the waves direction.
+    this.object.rotation.z = (1 / 10) * Math.sin(t);
   }
 
 }
 
 export default Ship;
+
+
+
+
+function angleTo(v1: Vector2, v2: Vector2) {
+  const dot = v1.dot(v2);
+  const mv1 = v1.length();
+  const mv2 = v2.length();
+
+  return Math.acos(dot / (mv1 * mv2));
+}
