@@ -1,6 +1,4 @@
 
-import Keyboard, { RIGHT, LEFT, UP, DOWN } from '../utils/Keyboard';
-import { ShipSide } from '../objects/ship/types';
 import { MathUtils } from 'three';
 import Game from '../core/Game';
 import Ship from '../objects/ship/ship';
@@ -42,6 +40,7 @@ export function handleExternalControls(game: Game, ship: Ship) {
   const compassDOM = document.getElementById('compass-img');
   compassDOM!.style.transform = `rotate(${shipDirectionInDegreesWithRespectWithNorth}deg)`;
 
+  // console.log(angleTo(game.enviorment.wind.getWindAtPosition(ship.object.position).direction, ship.direction) / Math.PI)
   const windDirection = -1 * MathUtils.radToDeg(angleTo(game.enviorment.wind.getWindAtPosition(ship.object.position).direction, ship.direction));
   const windDOM = document.getElementById('wind-img');
   windDOM!.style.transform = `rotate(${windDirection}deg)`
