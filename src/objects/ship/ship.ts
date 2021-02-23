@@ -1,12 +1,13 @@
 import { Object3D, Vector2 } from "three";
 import CannonBall from "../cannonBall/cannonBall";
 import { ShipCannons, ShipSize, ShipSide } from "./types";
-import SteppedObject from '../SteppedObject';
+import Stepable from '../Stepable';
 import Enviorment from "../../enviorment/enviorment";
 import Sails from './sails';
-import { GRAVITY } from '../../utils/phyisics';
+import BaseObject from '../BaseObject'
+import { angleTo } from '../../utils/math'
 
-abstract class Ship implements SteppedObject {
+abstract class Ship implements Stepable, BaseObject {
 
   static ROTATE_LEFT = 'left';
   static ROTATE_RIGHT = 'right';
@@ -42,6 +43,8 @@ abstract class Ship implements SteppedObject {
     this.weight = weight;
     this.cannons = cannons;
     this.maxSpeed = maxSpeed;
+
+    // TODO: we should define a sails.area / mass ratio that can not be exceeded
     this.sails = new Sails(10, 5);
     this.mass = 1000;
   }
@@ -88,7 +91,7 @@ abstract class Ship implements SteppedObject {
     Object.keys(this.cannons).forEach(c => {
       const cannon: ShipSide = c as ShipSide;
       const cannonGroup = this.cannons[cannon];
-      cannonGroup && cannonGroup.getCannon().step(dt);
+      cannonGroup && cannonGroup.getCannon().step(enviorment, t, dt);
     })
   }
 
@@ -102,7 +105,17 @@ abstract class Ship implements SteppedObject {
 
   private calculateAcceleration(enviorment: Enviorment) {
     // f=m*a --> a = f/m;
-    // f = fw(wind force) + fd(drag force) - fr(friction force)
+    // f = fw(wind force) + fd(drag force) - fr(resistancce force)
+
+    // fr = viscous resistance (Rv) + wave making resistance(Rw) + air resistance(Raa). (https://www.usna.edu/NAOE/_files/documents/Courses/EN400/02.07%20Chapter%207.pdf) pg. 7-8
+    // Lets assume that the air resistance is = 0
+    // fr = Rv + Rw + 0.
+    // Rv = f(water viscosity, speed, wattered ship area)
+    // Rw = f(beam to length ratio, hull shape, froude number)
+    // Since the formulas describe a parabolic shape with increasing ship speed we will simplify the fr(resitance force) with the shape of
+    // fr = a*v^2 + b*v
+    // Where ka and kb are constant
+
     // fw = wind preassure * Sails Area
     // fd = Water preassure * keel area + air preassure * exposed boat area.
     // wind preassure (simplified) = wp = air mass density (kg/m^3) * wind speed^2(m/s^2)
@@ -112,37 +125,32 @@ abstract class Ship implements SteppedObject {
 
     const airMassDensity = 1.225;
 
-
     const wind = enviorment.wind.getWindAtPosition(this.object.position);
     const windPreassure = airMassDensity * Math.pow(wind.speed, 2);
 
-    // const angleBetweenWindDirectionAndShipDirection = angleTo(this.direction, wind.direction);
-    let proyectedSailsAreaInWindsDirection = 30 //this.sails.width * Math.cos(angleBetweenWindDirectionAndShipDirection) * this.sails.height;
+    const angleBetweenWindDirectionAndShipDirection = angleTo(this.direction, wind.direction);
+    // To avoid having negative acceleration due to wind preassure opposite to the sails, let use the max function,
+    let proyectedSailsAreaInWindsDirection = this.sails.width * Math.max(Math.cos(angleBetweenWindDirectionAndShipDirection), 0) * this.sails.height;
 
     if (!this.sails.open) {
       proyectedSailsAreaInWindsDirection = 0;
     }
 
     const dragForce = 0;
-
-    const shipsNormalForce = this.mass * GRAVITY;
-
-    const waterShipFrictionCoeficcient = 0.2;
     const windForce = windPreassure * proyectedSailsAreaInWindsDirection;
-    let frictionForce = shipsNormalForce * waterShipFrictionCoeficcient;
-    if (!this.isMoving()) {
-      frictionForce = 0
-    }
-    const totalForce = windForce + dragForce - frictionForce;
+
+    const resistanceCoefA = 30;
+    const resistanceCoefB = 1;
+    const resistanceForce = resistanceCoefA * Math.pow(this.speed, 2) + resistanceCoefB * this.speed + 2;
+
+    const totalForce = windForce + dragForce - resistanceForce;
+
     const acceleration = totalForce / this.mass;
     return acceleration;
   }
 
   private calculateSpeed(dt: number) {
     this.speed += this.acceleration * dt;
-    if (this.speed > this.maxSpeed) {
-      this.speed = this.maxSpeed;
-    }
   }
 
   // private desAccelerate() {
@@ -177,14 +185,3 @@ abstract class Ship implements SteppedObject {
 }
 
 export default Ship;
-
-
-
-
-function angleTo(v1: Vector2, v2: Vector2) {
-  const dot = v1.dot(v2);
-  const mv1 = v1.length();
-  const mv2 = v2.length();
-
-  return Math.acos(dot / (mv1 * mv2));
-}

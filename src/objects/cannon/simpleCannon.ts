@@ -1,16 +1,18 @@
+import Enviorment from "../../enviorment/enviorment";
 import { Vector2 } from "three/src/math/Vector2";
 import SimpleCannonBall from "../cannonBall/simpleCannonBall";
 import Cannon from "./cannon";
 
-class SimpleCannon implements Cannon {
+class SimpleCannon extends Cannon {
 
   private charingDelta: number;
 
   constructor() {
+    super(Math.PI);
     this.charingDelta = 0;
   }
 
-  step(dt: number) {
+  step(env: Enviorment, t: number, dt: number) {
     if (this.charingDelta > 0) {
       this.charingDelta -= dt;
     }

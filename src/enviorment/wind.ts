@@ -27,7 +27,7 @@ class Wind {
         // TODO: make this map by using some kind of noise
         this.windMap[x][y] = {
           speed: 10,
-          direction: new Vector2(0.5, 0.5)
+          direction: new Vector2(1, 0)
         }
       }
     }

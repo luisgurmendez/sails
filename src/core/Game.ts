@@ -1,14 +1,14 @@
 import Enviorment from "../enviorment/enviorment";
-import SteppedObject from "../objects/SteppedObject";
 import { Camera, Clock, Color, PCFSoftShadowMap, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import Keyboard from "../utils/Keyboard";
 import Stats from 'stats.js';
+import BaseObject from "../objects/BaseObject";
+import Stepable, { isStepable } from "../objects/Stepable";
 
 class Game {
 
-  // TODO: generate getters
-  public steppedObjects: SteppedObject[];
+  public objects: (BaseObject | (BaseObject & Stepable))[];
   public enviorment: Enviorment;
   public clock: Clock;
   public scene: Scene;
@@ -19,7 +19,7 @@ class Game {
   public pressedKeys: Keyboard;
 
   constructor() {
-    this.steppedObjects = [];
+    this.objects = [];
     this.enviorment = new Enviorment();
     this.clock = new Clock();
 
@@ -59,9 +59,20 @@ class Game {
     }
   }
 
-  public addSteppedObject(object: SteppedObject) {
-    this.steppedObjects.push(object);
+  public addObject(object: BaseObject) {
+    this.objects.push(object);
     this.scene.add(object.object);
+  }
+
+  public step() {
+    const dt = this.clock.getDelta();
+    const t = this.clock.getElapsedTime();
+
+    this.objects.forEach(object => {
+      if (isStepable(object)) {
+        object.step(this.enviorment, t, dt);
+      }
+    })
   }
 
   private beforeUpdate() {
@@ -72,9 +83,9 @@ class Game {
     this.renderer.render(this.scene, this.camera);
     this.orbitControls.update();
     this.stats.end();
-    this.steppedObjects.forEach(mo => {
-      if (mo.shouldBeRemoved) {
-        this.scene.remove(mo.object);
+    this.objects.forEach(o => {
+      if (o.shouldBeRemoved) {
+        this.scene.remove(o.object);
       }
     })
   }

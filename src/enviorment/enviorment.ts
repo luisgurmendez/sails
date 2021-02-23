@@ -1,10 +1,11 @@
+import Stepable from "../objects/Stepable";
 import { Scene } from "three";
 import Daylight from "./daylight";
 import Ocean from "./ocean";
 import Sun from "./sun";
 import Wind from "./wind";
 
-class Enviorment {
+class Enviorment implements Stepable {
 
   public sun: Sun;
   public ocean: Ocean;
@@ -24,7 +25,9 @@ class Enviorment {
     scene.add(this.daylight.object);
   }
 
-  step() { }
+  step() {
+
+  }
 
 }
 

@@ -1,7 +1,7 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 const loader = new GLTFLoader();
 
-async function loadShipAsync(shipPath: string, handleLoadingProgress?: (e: ProgressEvent) => void) {
+async function shipLoader(shipPath: string, handleLoadingProgress?: (e: ProgressEvent) => void) {
 
   // Load a glTF resource
   const gltf = await loader.loadAsync(
@@ -20,4 +20,4 @@ async function loadShipAsync(shipPath: string, handleLoadingProgress?: (e: Progr
   return ship;
 }
 
-export default loadShipAsync;
+export default shipLoader;
