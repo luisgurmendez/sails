@@ -141,7 +141,7 @@ abstract class Ship implements Stepable, BaseObject {
 
     const resistanceCoefA = 30;
     const resistanceCoefB = 1;
-    const resistanceForce = resistanceCoefA * Math.pow(this.speed, 2) + resistanceCoefB * this.speed + 2;
+    const resistanceForce = resistanceCoefA * Math.pow(this.speed, 2) + resistanceCoefB * this.speed;
 
     const totalForce = windForce + dragForce - resistanceForce;
 

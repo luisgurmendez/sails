@@ -1,4 +1,3 @@
-
 import SimpleShip from './objects/ship/simpleShip';
 import { handleShipControls } from './core/controls';
 import { addControlHanlders, handleExternalControls } from './core/externalControls';

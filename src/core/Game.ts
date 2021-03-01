@@ -73,6 +73,7 @@ class Game {
         object.step(this.enviorment, t, dt);
       }
     })
+    this.enviorment.step(this.enviorment, t, dt);
   }
 
   private beforeUpdate() {
@@ -85,6 +86,7 @@ class Game {
     this.stats.end();
     this.objects.forEach(o => {
       if (o.shouldBeRemoved) {
+        // TODO: remove from this.objects
         this.scene.remove(o.object);
       }
     })

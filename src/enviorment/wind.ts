@@ -35,10 +35,11 @@ class Wind {
 
   getWindAtPosition(position: Vector3): WindUnit {
 
+    // TODO: negative position values?
     const x = Math.round(position.x);
-    const y = Math.round(position.y);
+    const y = Math.round(position.z);
 
-    if (this.windMap[x] !== undefined) {
+    if (this.windMap[x] !== undefined && x > 0 && y > 0) {
       return this.windMap[x][y]
     }
     return {
