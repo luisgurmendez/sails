@@ -69,24 +69,24 @@
   <div id="external-controls-container">
     <div id="steer-wheel">
       <div class="steer-wheel-container control-container">
-        <img class="steer-wheel-img" class="control-img" src="./assets/shipSteer.png" />
+        <img class="steer-wheel-img" class="control-img" src=<%=require("./assets/shipSteer.png").default %> />
       </div>
     </div>
 
     <div id="compass">
       <div class="compass-container control-container">
-        <img id="compass-img" class="control-img" src="./assets/compass.png" />
+        <img id="compass-img" class="control-img" src=<%=require("./assets/compass.png").default %>/>
       </div>
     </div>
 
     <div id="wind">
       <div class="wind-container control-container">
-        <img id="wind-img" class="control-img" src="./assets/wind.png" />
+        <img id="wind-img" class="control-img" src=<%=require("./assets/wind.png").default %> />
       </div>
     </div>
   </div>
 
-  <script src="build/index.js"></script>
+  <script src="./main.js"></script>
 </body>
 
 </html>

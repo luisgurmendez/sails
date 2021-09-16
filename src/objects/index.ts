@@ -1,8 +1,3 @@
-import { BaseObject } from './BaseObject';
-import MovingObject from './movingObject';
+import BaseObject from './BaseObject';
 
-export type AllObject = BaseObject | MovingObject
-
-export function isMovingObject(obj: AllObject): obj is MovingObject {
-  return false
-}
+export type AllObject = BaseObject
